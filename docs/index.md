@@ -25,7 +25,7 @@ To use the Assert provider, declare it as a `required_provider` in the `terrafor
 terraform {
   required_providers {
     assert = {
-      source = "hashicorp/assert"
+      source = "BehnH/assert"
     }
   }
 }
