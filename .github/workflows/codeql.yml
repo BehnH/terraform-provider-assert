@@ -13,7 +13,6 @@ jobs:
     name: Analyze (${{ matrix.language }})
     runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
     permissions:
-      # required for all workflows
       security-events: write
       packages: read
       actions: read
@@ -24,8 +23,10 @@ jobs:
         include:
         - language: actions
           build-mode: none
+          queries: security-extended
         - language: go
-          build-mode: autobuild
+          build-mode: manual
+          queries: ""
     steps:
     - name: Checkout repository
       uses: actions/checkout@v6
@@ -41,13 +42,11 @@ jobs:
       with:
         languages: ${{ matrix.language }}
         build-mode: ${{ matrix.build-mode }}
+        queries: ${{ matrix.queries }}
 
-    - name: Run manual build steps
-      if: matrix.build-mode == 'manual' && matrix.language == 'go'
-      shell: bash
-      run: |
-        make generate
-        make build
+    - name: Build Go
+      if: ${{ matrix.language == 'go' }}
+      run: go build ./...
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4
